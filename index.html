@@ -352,6 +352,275 @@
     color: #78350f;
     margin-top: 8px;
   }
+
+  /* ---------- Tabs ---------- */
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  nav.tabs button.tab {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-soft);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color .12s, border-color .12s;
+  }
+  nav.tabs button.tab:hover { color: var(--text); background: transparent; }
+  nav.tabs button.tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ---------- Recipe vault ---------- */
+  .recipe-toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .recipe-toolbar input[type="search"] {
+    flex: 1;
+    min-width: 200px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .recipe-toolbar input[type="search"]:focus {
+    outline: 2px solid var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .recipe-dropzone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 14px;
+    transition: border-color .15s, background .15s;
+    margin-bottom: 14px;
+    background: #fafbfc;
+  }
+  .recipe-dropzone.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+  }
+  .recipe-dropzone p { margin: 0; }
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .recipe-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color .12s, box-shadow .12s;
+  }
+  .recipe-card:hover { border-color: #cbd5e1; box-shadow: var(--shadow); }
+  .recipe-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .recipe-card-icon {
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .recipe-card-title {
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  .recipe-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+  }
+  .recipe-tag {
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .recipe-card-notes {
+    color: var(--text-soft);
+    font-size: 12px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .recipe-card-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .recipe-card-actions button {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  .recipe-card-actions button.open {
+    flex: 1;
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .recipe-card-actions button.open:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .recipe-card-meta {
+    font-size: 11px;
+    color: var(--text-soft);
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .modal {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+  }
+  .modal .modal-sub {
+    color: var(--text-soft);
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .modal label.field-label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-soft);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 12px 0 4px;
+  }
+  .modal input[type="text"],
+  .modal input[type="url"],
+  .modal textarea {
+    width: 100%;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .modal textarea {
+    min-height: 70px;
+    resize: vertical;
+  }
+  .modal input:focus, .modal textarea:focus {
+    outline: 2px solid var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+  .recipe-empty {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-soft);
+    font-size: 14px;
+  }
+  .recipe-empty p { margin: 4px 0; }
+
+  /* Planner-fields section inside modal */
+  details.planner-fields {
+    margin-top: 16px;
+    padding: 12px;
+    background: #fafbfc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  details.planner-fields summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    user-select: none;
+  }
+  .equipment-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .equipment-mini-grid label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .equipment-mini-grid label.checked {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-hover);
+  }
+  .equipment-mini-grid input { margin: 0; }
+
+  .saved-summary {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-bottom: 14px;
+    color: var(--accent-hover);
+  }
+  .saved-summary strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  .saved-summary ul { margin: 0; padding-left: 18px; }
 </style>
 </head>
 <body>
@@ -367,6 +636,13 @@
       <span class="equipment-summary" id="equipSummary"></span>
     </div>
   </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="plan">📅 Plan the week</button>
+    <button class="tab" data-tab="recipes">📚 My recipes</button>
+  </nav>
+
+  <section id="tab-plan" class="tab-content active">
 
   <!-- EQUIPMENT + SETTINGS -->
   <section class="card" id="configCard">
@@ -440,9 +716,77 @@
     </section>
   </div>
 
+  </section>
+  <!-- /tab-plan -->
+
+  <section id="tab-recipes" class="tab-content">
+    <div class="card">
+      <h2>My recipe collection</h2>
+      <p style="margin: 0 0 14px; color: var(--text-soft); font-size: 13px;">
+        Save recipes you love — drop a PDF, paste a URL, or click + buttons.
+        Stored privately in your browser; nothing leaves your device.
+      </p>
+
+      <div class="recipe-toolbar">
+        <input type="search" id="recipeSearch" placeholder="🔍  Search title, tags, notes…">
+        <button id="addUrlBtn">+ Add URL</button>
+        <button id="addPdfBtn">+ Add PDF</button>
+        <input type="file" id="pdfInput" accept="application/pdf" multiple style="display:none">
+      </div>
+
+      <div class="recipe-dropzone" id="recipeDropzone">
+        <p><strong>Drop PDF files here</strong></p>
+        <p style="margin-top: 4px; font-size: 12px;">…or use the buttons above</p>
+      </div>
+
+      <div class="recipe-grid" id="recipeGrid"></div>
+    </div>
+  </section>
+  <!-- /tab-recipes -->
+
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Add/Edit recipe modal -->
+<div class="modal-backdrop" id="modalBackdrop" style="display:none">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="modalTitle">Add recipe</h3>
+    <div class="modal-sub" id="modalSub"></div>
+    <form id="recipeForm">
+      <label class="field-label" for="rTitle">Title</label>
+      <input type="text" id="rTitle" required maxlength="200" placeholder="Lemon chicken from Bon Appétit">
+
+      <div id="urlFieldWrapper">
+        <label class="field-label" for="rUrl">Recipe URL</label>
+        <input type="url" id="rUrl" placeholder="https://...">
+      </div>
+
+      <label class="field-label" for="rTags">Tags <span style="color: var(--text-soft); font-weight: 400; text-transform: none; letter-spacing: 0;">(comma-separated, optional)</span></label>
+      <input type="text" id="rTags" placeholder="chicken, easy, family-favorite">
+
+      <label class="field-label" for="rNotes">Notes (optional)</label>
+      <textarea id="rNotes" placeholder="A few words on why you love it, swaps you make, etc."></textarea>
+
+      <details class="planner-fields" id="plannerFields">
+        <summary>Use this recipe in meal plans <span style="color: var(--text-soft); font-weight: 400;">(optional)</span></summary>
+        <p style="margin: 8px 0; color: var(--text-soft); font-size: 12px;">
+          Fill these in and the weekly plan generator can pick this recipe when it fits your kitchen.
+        </p>
+        <label class="field-label" for="rCookTime">Cook time (minutes)</label>
+        <input type="number" id="rCookTime" min="5" max="240" placeholder="e.g. 35">
+        <label class="field-label">Equipment needed</label>
+        <div class="equipment-mini-grid" id="rEquipmentGrid"></div>
+      </details>
+
+      <div class="modal-actions">
+        <button type="button" id="modalDeleteBtn" style="margin-right: auto; color: #b91c1c; display:none">Delete</button>
+        <button type="button" id="modalCancelBtn">Cancel</button>
+        <button type="submit" class="primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
 // =============================================================
@@ -1187,11 +1531,36 @@ function showToast(msg) {
 // =============================================================
 // MEAL PLAN GENERATION (library mode)
 // =============================================================
-function generatePlanFromLibrary() {
+function buildEligibleRecipes() {
   const available = state.equipment;
-  const eligible = RECIPES.filter(r =>
+
+  const builtIn = RECIPES.filter(r =>
     canCook(r, available) && r.cookTime <= state.cookTimeMax
   );
+
+  // Saved recipes that have been tagged with equipment + cook time qualify too.
+  const savedTagged = (typeof recipeCache !== 'undefined' ? recipeCache : []).filter(r =>
+    Array.isArray(r.equipment) && r.equipment.length > 0 &&
+    typeof r.cookTime === 'number' && r.cookTime > 0 &&
+    r.equipment.every(eq => available.includes(eq)) &&
+    r.cookTime <= state.cookTimeMax
+  ).map(saved => ({
+    id: 'saved-' + saved.id,
+    name: saved.title,
+    description: saved.notes || '',
+    equipmentOptions: [saved.equipment],
+    cookTime: saved.cookTime,
+    servings: 4,
+    ingredients: [],
+    steps: [],
+    _savedId: saved.id,
+  }));
+
+  return [...builtIn, ...savedTagged];
+}
+
+function generatePlanFromLibrary() {
+  const eligible = buildEligibleRecipes();
 
   if (eligible.length === 0) {
     showToast('No recipes match your equipment + time. Try expanding either.');
@@ -1334,17 +1703,51 @@ function renderPlan() {
 
   state.plan.forEach((entry, idx) => {
     const r = entry.recipe;
+    const isSaved = !!r._savedId;
     let usedLabels;
     if (entry.source === 'ai') {
-      // For AI meals, trust the equipment list — the AI was constrained to your kit.
       const aiEq = (r.equipmentOptions[0] || []);
       usedLabels = aiEq.length ? aiEq.map(equipmentLabel).join(' + ') : 'AI-planned';
+    } else if (isSaved) {
+      usedLabels = (r.equipmentOptions[0] || []).map(equipmentLabel).join(' + ') || 'your kit';
     } else {
       const used = equipmentUsed(r, state.equipment);
       usedLabels = used.map(equipmentLabel).join(' + ') || '⚠️ needs equipment you don\'t have';
     }
+    const sourceBadge = entry.source === 'ai'
+      ? '<span class="badge" style="background:#eef2ff;color:#4338ca">✨ AI</span>'
+      : (isSaved ? '<span class="badge" style="background:#f0fdf4;color:#166534">📚 Saved</span>' : '');
+
     const card = document.createElement('div');
     card.className = 'meal-card';
+
+    const bodyHtml = isSaved
+      ? `
+        ${r.description ? `<p style="margin: 8px 0 4px; color: var(--text-soft); font-size:13px">${r.description}</p>` : ''}
+        <p style="margin: 6px 0 0; font-size: 12px; color: var(--text-soft);">
+          Open your saved recipe for full ingredients and steps.
+        </p>
+        <button data-action="open-saved" data-idx="${idx}" style="margin-top: 10px; background: var(--accent); color: white; border-color: var(--accent);">
+          📖 Open recipe
+        </button>
+      `
+      : `
+        <details class="recipe">
+          <summary>Recipe &amp; ingredients</summary>
+          ${r.description ? `<p style="margin: 8px 0 4px; color: var(--text-soft); font-size:13px">${r.description}</p>` : ''}
+          <strong style="font-size:12px; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em;">Ingredients</strong>
+          <ul>
+            ${r.ingredients.map(i => {
+              const factor = state.household / 4;
+              const q = Math.round(i.qty * factor * 100) / 100;
+              return `<li>${q} ${i.unit ? i.unit + ' ' : ''}${i.name}</li>`;
+            }).join('')}
+          </ul>
+          ${r.steps && r.steps.length ? `<strong style="font-size:12px; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em; display:block; margin-top:10px;">Steps</strong>
+          <ol>${r.steps.map(s => `<li>${s}</li>`).join('')}</ol>` : ''}
+        </details>
+      `;
+
     card.innerHTML = `
       <div class="meal-head">
         <div>
@@ -1353,7 +1756,7 @@ function renderPlan() {
           <div class="meal-meta">
             <span>⏱ ${r.cookTime} min</span>
             <span class="badge">${usedLabels}</span>
-            ${entry.source === 'ai' ? '<span class="badge" style="background:#eef2ff;color:#4338ca">✨ AI</span>' : ''}
+            ${sourceBadge}
           </div>
         </div>
         <div class="meal-actions">
@@ -1361,22 +1764,20 @@ function renderPlan() {
           <button class="ghost" data-action="remove" data-idx="${idx}" title="Remove">✕</button>
         </div>
       </div>
-      <details class="recipe">
-        <summary>Recipe &amp; ingredients</summary>
-        ${r.description ? `<p style="margin: 8px 0 4px; color: var(--text-soft); font-size:13px">${r.description}</p>` : ''}
-        <strong style="font-size:12px; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em;">Ingredients</strong>
-        <ul>
-          ${r.ingredients.map(i => {
-            const factor = state.household / 4;
-            const q = Math.round(i.qty * factor * 100) / 100;
-            return `<li>${q} ${i.unit ? i.unit + ' ' : ''}${i.name}</li>`;
-          }).join('')}
-        </ul>
-        ${r.steps ? `<strong style="font-size:12px; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em; display:block; margin-top:10px;">Steps</strong>
-        <ol>${r.steps.map(s => `<li>${s}</li>`).join('')}</ol>` : ''}
-      </details>
+      ${bodyHtml}
     `;
     el.appendChild(card);
+  });
+
+  // Open-source buttons for saved-recipe meal cards
+  el.querySelectorAll('button[data-action="open-saved"]').forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      const entry = state.plan[idx];
+      if (entry && entry.recipe && entry.recipe._savedId) {
+        openRecipe(entry.recipe._savedId);
+      }
+    };
   });
 
   // wire up swap / remove
@@ -1387,10 +1788,7 @@ function renderPlan() {
       if (action === 'remove') {
         state.plan.splice(idx, 1);
       } else if (action === 'swap') {
-        const available = state.equipment;
-        const eligible = RECIPES.filter(r =>
-          canCook(r, available) &&
-          r.cookTime <= state.cookTimeMax &&
+        const eligible = buildEligibleRecipes().filter(r =>
           !state.plan.some(e => e.recipe.id === r.id)
         );
         if (eligible.length === 0) {
@@ -1425,9 +1823,25 @@ function renderShopping() {
     return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
   });
 
+  // Saved-recipe summary (those don't contribute to the merged list)
+  const savedInPlan = state.plan.filter(e => e.recipe && e.recipe._savedId);
+  if (savedInPlan.length > 0) {
+    const lis = savedInPlan.map(e => `<li>${escapeHtml(e.recipe.name)} <span style="opacity:.7">— ${e.day}</span></li>`).join('');
+    const div = document.createElement('div');
+    div.className = 'saved-summary';
+    div.innerHTML = `<strong>📚 Your saved recipes this week</strong>
+      <ul>${lis}</ul>
+      <p style="margin: 6px 0 0; font-size: 11px;">Check each one for ingredients — they aren't merged into the list below.</p>`;
+    el.appendChild(div);
+  }
+
   if (cats.length === 0) {
-    el.innerHTML = `<div class="empty"><p>Nothing to buy yet.</p></div>`;
-    copyBtn.style.display = 'none';
+    if (savedInPlan.length === 0) {
+      el.innerHTML = `<div class="empty"><p>Nothing to buy yet.</p></div>`;
+      copyBtn.style.display = 'none';
+    } else {
+      copyBtn.style.display = 'none';
+    }
     return;
   }
 
@@ -1670,8 +2084,386 @@ if (!state.plan || state.plan.length === 0) {
   }, 0);
 }
 
+// =============================================================
+// RECIPE VAULT (IndexedDB-backed personal recipe collection)
+// =============================================================
+const RecipeDB = {
+  _db: null,
+  async open() {
+    if (this._db) return this._db;
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('mealplanner_recipes', 1);
+      req.onerror = () => reject(req.error);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains('recipes')) {
+          const store = db.createObjectStore('recipes', { keyPath: 'id', autoIncrement: true });
+          store.createIndex('addedAt', 'addedAt');
+        }
+      };
+      req.onsuccess = () => { this._db = req.result; resolve(this._db); };
+    });
+  },
+  async _store(mode) {
+    const db = await this.open();
+    return db.transaction('recipes', mode).objectStore('recipes');
+  },
+  async add(rec) {
+    const store = await this._store('readwrite');
+    return new Promise((res, rej) => {
+      const r = store.add(rec);
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+  },
+  async update(id, patch) {
+    const store = await this._store('readwrite');
+    return new Promise((res, rej) => {
+      const getReq = store.get(id);
+      getReq.onsuccess = () => {
+        if (!getReq.result) return rej(new Error('Recipe not found'));
+        const merged = { ...getReq.result, ...patch };
+        const putReq = store.put(merged);
+        putReq.onsuccess = () => res(merged);
+        putReq.onerror = () => rej(putReq.error);
+      };
+      getReq.onerror = () => rej(getReq.error);
+    });
+  },
+  async delete(id) {
+    const store = await this._store('readwrite');
+    return new Promise((res, rej) => {
+      const r = store.delete(id);
+      r.onsuccess = () => res();
+      r.onerror = () => rej(r.error);
+    });
+  },
+  async getAll() {
+    const store = await this._store('readonly');
+    return new Promise((res, rej) => {
+      const r = store.getAll();
+      r.onsuccess = () => res((r.result || []).sort((a, b) => b.addedAt - a.addedAt));
+      r.onerror = () => rej(r.error);
+    });
+  },
+};
+
+let recipeCache = [];
+let currentSearch = '';
+let modalState = { mode: 'add-url', editId: null, pendingPdfs: [] };
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+async function loadRecipes() {
+  try {
+    recipeCache = await RecipeDB.getAll();
+  } catch (e) {
+    console.warn('Failed to load recipes:', e);
+    recipeCache = [];
+  }
+  renderRecipeGrid();
+}
+
+function renderRecipeGrid() {
+  const grid = document.getElementById('recipeGrid');
+  if (!grid) return;
+  const q = currentSearch.trim().toLowerCase();
+  const items = !q ? recipeCache : recipeCache.filter(r => {
+    const hay = [r.title, (r.tags || []).join(' '), r.notes || '', r.url || '', r.filename || ''].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+
+  if (recipeCache.length === 0) {
+    grid.innerHTML = `<div class="recipe-empty"><p style="font-size:28px;margin:0">📚</p><p><strong>Your collection is empty</strong></p><p>Drop a PDF or click <em>Add URL</em> to save your first recipe.</p></div>`;
+    return;
+  }
+  if (items.length === 0) {
+    grid.innerHTML = `<div class="recipe-empty"><p>No recipes match "<strong>${escapeHtml(currentSearch)}</strong>".</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = items.map(r => {
+    const icon = r.type === 'pdf' ? '📄' : '🔗';
+    const tags = (r.tags || []).map(t => `<span class="recipe-tag">${escapeHtml(t)}</span>`).join('');
+    let meta = '';
+    if (r.type === 'pdf') meta = r.filename || 'PDF';
+    else {
+      try { meta = new URL(r.url).hostname.replace(/^www\./, ''); }
+      catch { meta = 'link'; }
+    }
+    return `
+      <div class="recipe-card" data-id="${r.id}">
+        <div class="recipe-card-head">
+          <span class="recipe-card-icon">${icon}</span>
+          <div style="flex:1;min-width:0">
+            <div class="recipe-card-title">${escapeHtml(r.title)}</div>
+            <div class="recipe-card-meta">${escapeHtml(meta)}</div>
+          </div>
+        </div>
+        ${tags ? `<div class="recipe-card-tags">${tags}</div>` : ''}
+        ${r.notes ? `<div class="recipe-card-notes">${escapeHtml(r.notes)}</div>` : ''}
+        <div class="recipe-card-actions">
+          <button class="open" data-action="open">Open</button>
+          <button data-action="edit" title="Edit">✎</button>
+          <button data-action="delete" title="Delete">🗑</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.recipe-card button[data-action]').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const card = e.target.closest('.recipe-card');
+      const id = parseInt(card.dataset.id, 10);
+      const action = btn.dataset.action;
+      if (action === 'open') openRecipe(id);
+      else if (action === 'edit') openModalForEdit(id);
+      else if (action === 'delete') deleteRecipe(id);
+    };
+  });
+}
+
+function openRecipe(id) {
+  const r = recipeCache.find(x => x.id === id);
+  if (!r) return;
+  if (r.type === 'pdf' && r.blob) {
+    const url = URL.createObjectURL(r.blob);
+    window.open(url, '_blank');
+  } else if (r.url) {
+    window.open(r.url, '_blank', 'noopener');
+  }
+}
+
+async function deleteRecipe(id) {
+  const r = recipeCache.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm(`Delete "${r.title}"? This can't be undone.`)) return;
+  try {
+    await RecipeDB.delete(id);
+    await loadRecipes();
+    showToast('Deleted');
+  } catch (e) {
+    showToast('Could not delete: ' + e.message);
+  }
+}
+
+// ----- Modal -----
+function openModalForAddUrl() {
+  modalState = { mode: 'add-url', editId: null, pendingPdfs: [] };
+  fillModalFields({ title: '', url: '', tags: [], notes: '' });
+  document.getElementById('modalTitle').textContent = 'Add recipe URL';
+  document.getElementById('modalSub').textContent = 'Save a link to a recipe you found online.';
+  document.getElementById('modalDeleteBtn').style.display = 'none';
+  document.getElementById('urlFieldWrapper').style.display = '';
+  showModal();
+}
+
+function openModalForPdf(files) {
+  const pdfs = Array.from(files || []).filter(f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name));
+  if (pdfs.length === 0) {
+    showToast('Only PDF files are supported.');
+    return;
+  }
+  modalState = { mode: 'add-pdf', editId: null, pendingPdfs: pdfs };
+  primeNextPdfInModal();
+  document.getElementById('modalDeleteBtn').style.display = 'none';
+  document.getElementById('urlFieldWrapper').style.display = 'none';
+  showModal();
+}
+
+function primeNextPdfInModal() {
+  const next = modalState.pendingPdfs[0];
+  if (!next) return;
+  const guessedTitle = next.name.replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').trim();
+  fillModalFields({ title: guessedTitle, url: '', tags: [], notes: '' });
+  const total = modalState.pendingPdfs.length;
+  document.getElementById('modalTitle').textContent = total > 1 ? `Add PDF (${total} queued)` : 'Add PDF recipe';
+  document.getElementById('modalSub').textContent = `File: ${next.name}`;
+}
+
+function openModalForEdit(id) {
+  const r = recipeCache.find(x => x.id === id);
+  if (!r) return;
+  modalState = { mode: 'edit', editId: id, pendingPdfs: [] };
+  fillModalFields(r);
+  document.getElementById('modalTitle').textContent = 'Edit recipe';
+  document.getElementById('modalSub').textContent = r.type === 'pdf' ? (r.filename || 'PDF') : (r.url || '');
+  document.getElementById('modalDeleteBtn').style.display = '';
+  document.getElementById('urlFieldWrapper').style.display = r.type === 'url' ? '' : 'none';
+  showModal();
+}
+
+function fillModalFields(r) {
+  document.getElementById('rTitle').value = r.title || '';
+  document.getElementById('rUrl').value = r.url || '';
+  document.getElementById('rTags').value = (r.tags || []).join(', ');
+  document.getElementById('rNotes').value = r.notes || '';
+  document.getElementById('rCookTime').value = r.cookTime || '';
+  renderModalEquipmentGrid(r.equipment || []);
+  // Open the planner section automatically if the recipe already has tags
+  const hasTags = (r.equipment && r.equipment.length > 0) || r.cookTime;
+  document.getElementById('plannerFields').open = !!hasTags;
+}
+
+function renderModalEquipmentGrid(selected) {
+  const grid = document.getElementById('rEquipmentGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  EQUIPMENT.forEach(eq => {
+    const isChecked = selected.includes(eq.id);
+    const label = document.createElement('label');
+    label.className = isChecked ? 'checked' : '';
+    label.innerHTML = `<input type="checkbox" data-eq="${eq.id}" ${isChecked ? 'checked' : ''}><span>${eq.icon} ${eq.label}</span>`;
+    label.querySelector('input').onchange = (e) => {
+      label.classList.toggle('checked', e.target.checked);
+    };
+    grid.appendChild(label);
+  });
+}
+
+function getModalEquipment() {
+  return Array.from(document.querySelectorAll('#rEquipmentGrid input[type="checkbox"]'))
+    .filter(c => c.checked)
+    .map(c => c.dataset.eq);
+}
+
+function showModal() {
+  document.getElementById('modalBackdrop').style.display = 'flex';
+  setTimeout(() => document.getElementById('rTitle').focus(), 50);
+}
+
+function hideModal() {
+  document.getElementById('modalBackdrop').style.display = 'none';
+}
+
+async function submitModal(e) {
+  e.preventDefault();
+  const title = document.getElementById('rTitle').value.trim();
+  const urlVal = document.getElementById('rUrl').value.trim();
+  const tags = document.getElementById('rTags').value.split(',').map(t => t.trim()).filter(Boolean);
+  const notes = document.getElementById('rNotes').value.trim();
+  const cookTimeRaw = document.getElementById('rCookTime').value;
+  const cookTime = cookTimeRaw ? parseInt(cookTimeRaw, 10) : null;
+  const equipment = getModalEquipment();
+
+  if (!title) { showToast('Title is required.'); return; }
+
+  try {
+    if (modalState.mode === 'edit') {
+      const existing = recipeCache.find(x => x.id === modalState.editId);
+      const patch = { title, tags, notes, cookTime, equipment };
+      if (existing && existing.type === 'url') {
+        if (!urlVal) { showToast('URL is required.'); return; }
+        patch.url = urlVal;
+      }
+      await RecipeDB.update(modalState.editId, patch);
+      hideModal();
+      await loadRecipes();
+      showToast('Saved');
+    } else if (modalState.mode === 'add-url') {
+      if (!urlVal) { showToast('URL is required.'); return; }
+      await RecipeDB.add({ type: 'url', title, url: urlVal, tags, notes, cookTime, equipment, addedAt: Date.now() });
+      hideModal();
+      await loadRecipes();
+      showToast('Recipe saved');
+    } else if (modalState.mode === 'add-pdf') {
+      const file = modalState.pendingPdfs.shift();
+      if (!file) { hideModal(); return; }
+      const buf = await file.arrayBuffer();
+      const blob = new Blob([buf], { type: 'application/pdf' });
+      await RecipeDB.add({ type: 'pdf', title, filename: file.name, blob, tags, notes, cookTime, equipment, addedAt: Date.now() });
+      await loadRecipes();
+      if (modalState.pendingPdfs.length > 0) {
+        primeNextPdfInModal();
+        showToast('Saved · next PDF');
+      } else {
+        hideModal();
+        showToast('Recipe saved');
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Could not save: ' + (err.message || 'unknown error'));
+  }
+}
+
+async function deleteFromModal() {
+  if (modalState.mode !== 'edit') return;
+  const r = recipeCache.find(x => x.id === modalState.editId);
+  if (!r) return;
+  if (!confirm(`Delete "${r.title}"? This can't be undone.`)) return;
+  await RecipeDB.delete(modalState.editId);
+  hideModal();
+  await loadRecipes();
+  showToast('Deleted');
+}
+
+// ----- Dropzone -----
+function bindDropzone() {
+  const dz = document.getElementById('recipeDropzone');
+  const tab = document.getElementById('tab-recipes');
+  if (!dz || !tab) return;
+  ['dragenter','dragover'].forEach(ev =>
+    tab.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag-over'); })
+  );
+  tab.addEventListener('dragleave', e => {
+    if (e.target === tab || e.target === dz) dz.classList.remove('drag-over');
+  });
+  tab.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('drag-over');
+    const files = e.dataTransfer?.files;
+    if (files && files.length) openModalForPdf(files);
+  });
+}
+
+// ----- Tabs -----
+function bindTabs() {
+  document.querySelectorAll('nav.tabs button.tab').forEach(btn => {
+    btn.onclick = () => {
+      const target = btn.dataset.tab;
+      document.querySelectorAll('nav.tabs button.tab').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tab-content').forEach(c =>
+        c.classList.toggle('active', c.id === 'tab-' + target)
+      );
+      if (target === 'recipes') loadRecipes();
+    };
+  });
+}
+
+function bindRecipeVault() {
+  bindTabs();
+  bindDropzone();
+  document.getElementById('addUrlBtn').onclick = openModalForAddUrl;
+  document.getElementById('addPdfBtn').onclick = () => document.getElementById('pdfInput').click();
+  document.getElementById('pdfInput').onchange = (e) => {
+    openModalForPdf(e.target.files);
+    e.target.value = '';
+  };
+  document.getElementById('recipeForm').onsubmit = submitModal;
+  document.getElementById('modalCancelBtn').onclick = hideModal;
+  document.getElementById('modalDeleteBtn').onclick = deleteFromModal;
+  document.getElementById('modalBackdrop').onclick = (e) => {
+    if (e.target.id === 'modalBackdrop') hideModal();
+  };
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('modalBackdrop').style.display === 'flex') {
+      hideModal();
+    }
+  });
+  document.getElementById('recipeSearch').oninput = (e) => {
+    currentSearch = e.target.value;
+    renderRecipeGrid();
+  };
+}
+
 bindControls();
+bindRecipeVault();
 renderAll();
+loadRecipes();
 </script>
 
 </body>
