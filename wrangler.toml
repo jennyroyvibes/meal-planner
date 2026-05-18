@@ -1,0 +1,8 @@
+name = "meal-planner-ai"
+main = "worker.js"
+compatibility_date = "2025-05-01"
+
+# Optional: lock the worker down to your Pages origin once it's live.
+# Uncomment and replace with your actual github.io URL after the site is up.
+# [vars]
+# ALLOWED_ORIGIN = "https://YOUR-USERNAME.github.io"

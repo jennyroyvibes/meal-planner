@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Meal Planner</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #faf8f3;
+    --surface: #ffffff;
+    --text: #1f2937;
+    --text-soft: #6b7280;
+    --border: #e5e7eb;
+    --accent: #c2410c;
+    --accent-soft: #fef3ec;
+    --accent-hover: #9a3412;
+    --success: #047857;
+    --success-soft: #ecfdf5;
+    --warning: #b45309;
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px 28px 80px;
+  }
+  header.top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-size: 26px;
+    margin: 0;
+    letter-spacing: -0.01em;
+    font-weight: 650;
+  }
+  .week-label {
+    color: var(--text-soft);
+    font-size: 13px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  h2 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  h3 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .col { display: flex; flex-direction: column; gap: 4px; }
+  label.field {
+    font-size: 12px;
+    color: var(--text-soft);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  select, input[type="number"] {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    min-width: 80px;
+  }
+  select:focus, input:focus {
+    outline: 2px solid var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+    margin: 8px 0 0;
+  }
+  .equip-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    transition: border-color .12s, background .12s;
+    user-select: none;
+    font-weight: 500;
+  }
+  .equip-chip:hover { border-color: #cbd5e1; }
+  .equip-chip.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+  }
+  .equip-chip input { display: none; }
+  .equip-icon { font-size: 18px; line-height: 1; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background .12s, border-color .12s, transform .05s;
+  }
+  button:hover { background: #f9fafb; border-color: #cbd5e1; }
+  button:active { transform: translateY(1px); }
+  button.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  button.ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-soft);
+    padding: 4px 8px;
+  }
+  button.ghost:hover { color: var(--text); background: #f3f4f6; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 16px 0 20px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+  .meal-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    margin-bottom: 10px;
+  }
+  .meal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .meal-day {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .meal-name { font-weight: 600; font-size: 15px; }
+  .meal-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--text-soft);
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .meal-actions {
+    display: flex;
+    gap: 4px;
+  }
+  details.recipe summary {
+    cursor: pointer;
+    color: var(--text-soft);
+    font-size: 12px;
+    user-select: none;
+    list-style: none;
+  }
+  details.recipe summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 4px;
+    transition: transform .15s;
+  }
+  details.recipe[open] summary::before { transform: rotate(90deg); }
+  details.recipe ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    color: var(--text-soft);
+    font-size: 13px;
+  }
+  details.recipe ol {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .shop-section { margin-bottom: 14px; }
+  .shop-section-title {
+    font-size: 11px;
+    color: var(--text-soft);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 6px;
+  }
+  .shop-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+  .shop-item input[type="checkbox"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .shop-item input[type="checkbox"]:checked {
+    background: var(--success);
+    border-color: var(--success);
+  }
+  .shop-item input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: white;
+    position: absolute;
+    top: -2px;
+    left: 2px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .shop-item.checked label { text-decoration: line-through; color: var(--text-soft); }
+  .shop-item label { cursor: pointer; flex: 1; }
+  .shop-item .qty { color: var(--text-soft); font-variant-numeric: tabular-nums; }
+  .empty {
+    text-align: center;
+    color: var(--text-soft);
+    padding: 32px 16px;
+    font-size: 14px;
+  }
+  .empty p { margin: 4px 0; }
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+  .toast.show { opacity: 1; }
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    display: inline-block;
+    vertical-align: -2px;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .saved-note {
+    font-size: 11px;
+    color: var(--success);
+    margin-left: 8px;
+  }
+  .equipment-summary {
+    color: var(--text-soft);
+    font-size: 13px;
+  }
+  details.config { margin-top: 4px; }
+  details.config summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 13px;
+    user-select: none;
+  }
+  hr.sep {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 14px 0;
+  }
+  .copy-btn { margin-top: 8px; }
+  .meals-empty-equip {
+    background: #fef3c7;
+    border-left: 3px solid var(--warning);
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #78350f;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="top">
+    <div>
+      <h1>Weekly Meal Planner</h1>
+      <div class="week-label" id="weekLabel">—</div>
+    </div>
+    <div class="row">
+      <span class="equipment-summary" id="equipSummary"></span>
+    </div>
+  </header>
+
+  <!-- EQUIPMENT + SETTINGS -->
+  <section class="card" id="configCard">
+    <details class="config" id="configDetails">
+      <summary>Kitchen setup &amp; preferences</summary>
+
+      <div style="margin-top: 16px;">
+        <h2>What's working in your kitchen?</h2>
+        <div class="presets" id="presets"></div>
+        <div class="equipment-grid" id="equipmentGrid"></div>
+      </div>
+
+      <hr class="sep">
+
+      <h2>Plan settings</h2>
+      <div class="row">
+        <div class="col">
+          <label class="field" for="household">Household size</label>
+          <input type="number" id="household" min="1" max="12" value="4">
+        </div>
+        <div class="col">
+          <label class="field" for="numDays">Meals to plan</label>
+          <input type="number" id="numDays" min="1" max="14" value="5">
+        </div>
+        <div class="col">
+          <label class="field" for="cookTime">Max weeknight cook time</label>
+          <select id="cookTime">
+            <option value="30">Under 30 min</option>
+            <option value="45" selected>30–45 min</option>
+            <option value="60">Up to 1 hour</option>
+            <option value="999">Any</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="sep">
+
+      <h2>AI regenerate (optional)</h2>
+      <p style="margin: 0 0 8px; color: var(--text-soft); font-size: 13px;">
+        Paste your Cloudflare Worker URL to enable the ✨ AI regenerate button.
+        See the project README for one-time deploy instructions.
+      </p>
+      <div class="row">
+        <div class="col" style="flex: 1; min-width: 280px;">
+          <label class="field" for="proxyUrl">Worker URL</label>
+          <input type="text" id="proxyUrl" placeholder="https://meal-planner-ai.YOUR-NAME.workers.dev" style="width: 100%;">
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <div class="actions">
+    <button class="primary" id="generateBtn">Generate week's plan</button>
+    <button id="aiBtn">✨ Regenerate with AI</button>
+    <button class="ghost" id="clearBtn">Clear plan</button>
+    <span class="saved-note" id="savedNote"></span>
+  </div>
+
+  <div class="layout">
+    <!-- MEAL PLAN -->
+    <section class="card">
+      <h2>This week's meals</h2>
+      <div id="mealPlan"></div>
+    </section>
+
+    <!-- SHOPPING LIST -->
+    <section class="card">
+      <h2>Shopping list</h2>
+      <div id="shoppingList"></div>
+      <button class="ghost copy-btn" id="copyBtn" style="display:none">📋 Copy unchecked items</button>
+    </section>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================================
+// EQUIPMENT MODEL
+// =============================================================
+const EQUIPMENT = [
+  { id: 'stove',       label: 'Cooktop / stove',     icon: '🔥' },
+  { id: 'oven',        label: 'Oven (or toaster oven)', icon: '♨️' },
+  { id: 'microwave',   label: 'Microwave',           icon: '📻' },
+  { id: 'air_fryer',   label: 'Air fryer',           icon: '🍟' },
+  { id: 'instant_pot', label: 'Instant Pot',         icon: '🍲' },
+  { id: 'grill',       label: 'Outdoor grill',       icon: '🔥' },
+  { id: 'slow_cooker', label: 'Slow cooker',         icon: '🥘' },
+];
+
+const PRESETS = [
+  { id: 'full',     label: '🏠 Full kitchen',      equipment: ['stove', 'oven', 'microwave'] },
+  { id: 'single',   label: '🍳 Single burner + small oven', equipment: ['stove', 'oven', 'microwave'] },
+  { id: 'no_oven',  label: '🚫 No oven',           equipment: ['stove', 'microwave'] },
+  { id: 'remodel',  label: '🔨 Remodel mode',      equipment: ['air_fryer', 'instant_pot', 'grill', 'microwave'] },
+];
+
+// =============================================================
+// RECIPE LIBRARY
+// Each recipe has equipmentOptions: an array of equipment combos —
+// any single combo's items must ALL be present in the user's kit.
+// Ingredients have category for shopping-list grouping.
+// =============================================================
+const RECIPES = [
+  // --- INSTANT POT FORWARD ---
+  {
+    id: 'ip-chicken-rice',
+    name: 'Instant Pot Chicken & Rice',
+    equipmentOptions: [['instant_pot']],
+    cookTime: 35, servings: 4,
+    description: 'One-pot lemony chicken thighs with rice and peas.',
+    ingredients: [
+      { name: 'Chicken thighs (boneless)', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Long-grain rice', qty: 1.5, unit: 'cup', category: 'Pantry' },
+      { name: 'Chicken broth', qty: 2, unit: 'cup', category: 'Pantry' },
+      { name: 'Frozen peas', qty: 1, unit: 'cup', category: 'Frozen' },
+      { name: 'Lemon', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Yellow onion', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Olive oil', qty: 2, unit: 'tbsp', category: 'Pantry' },
+    ],
+    steps: [
+      'Sauté diced onion and garlic in IP on Sauté mode with olive oil.',
+      'Season chicken with salt and pepper; brown briefly.',
+      'Add rice, broth, and lemon zest. Pressure cook 10 min, natural release 10 min.',
+      'Stir in peas and lemon juice before serving.'
+    ]
+  },
+  {
+    id: 'ip-beef-stew',
+    name: 'Instant Pot Beef Stew',
+    equipmentOptions: [['instant_pot'], ['stove']],
+    cookTime: 60, servings: 4,
+    description: 'Tender beef, carrots, potatoes in rich broth.',
+    ingredients: [
+      { name: 'Beef stew meat', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Carrots', qty: 4, unit: '', category: 'Produce' },
+      { name: 'Yukon gold potatoes', qty: 1, unit: 'lb', category: 'Produce' },
+      { name: 'Yellow onion', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Beef broth', qty: 3, unit: 'cup', category: 'Pantry' },
+      { name: 'Tomato paste', qty: 2, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Worcestershire sauce', qty: 1, unit: 'tbsp', category: 'Condiments' },
+      { name: 'Olive oil', qty: 2, unit: 'tbsp', category: 'Pantry' },
+    ],
+    steps: [
+      'Brown beef in IP on Sauté. Set aside.',
+      'Sauté onion, garlic, tomato paste 2 min.',
+      'Add everything back with broth and Worcestershire. Pressure cook 35 min.',
+      'Natural release 10 min. Season and serve.'
+    ]
+  },
+  {
+    id: 'ip-chili',
+    name: 'Instant Pot Turkey Chili',
+    equipmentOptions: [['instant_pot'], ['stove'], ['slow_cooker']],
+    cookTime: 40, servings: 4,
+    description: 'Hearty chili with beans, peppers, and corn.',
+    ingredients: [
+      { name: 'Ground turkey', qty: 1, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Black beans (canned)', qty: 2, unit: 'can', category: 'Pantry' },
+      { name: 'Diced tomatoes (canned)', qty: 1, unit: 'can', category: 'Pantry' },
+      { name: 'Bell pepper', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Yellow onion', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Chili powder', qty: 2, unit: 'tbsp', category: 'Spices' },
+      { name: 'Cumin', qty: 1, unit: 'tbsp', category: 'Spices' },
+      { name: 'Frozen corn', qty: 1, unit: 'cup', category: 'Frozen' },
+      { name: 'Shredded cheddar', qty: 1, unit: 'cup', category: 'Dairy & Eggs' },
+    ],
+    steps: [
+      'Sauté turkey with onion, garlic, pepper in IP.',
+      'Stir in spices, tomatoes, beans, corn.',
+      'Pressure cook 15 min. Quick release.',
+      'Top with cheese and serve.'
+    ]
+  },
+  {
+    id: 'ip-carnitas',
+    name: 'Instant Pot Carnitas Tacos',
+    equipmentOptions: [['instant_pot']],
+    cookTime: 75, servings: 4,
+    description: 'Pressure-cooked pork shoulder shredded into warm tortillas.',
+    ingredients: [
+      { name: 'Pork shoulder', qty: 2, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Orange', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Lime', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Yellow onion', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 4, unit: '', category: 'Produce' },
+      { name: 'Cumin', qty: 1, unit: 'tbsp', category: 'Spices' },
+      { name: 'Oregano (dried)', qty: 1, unit: 'tsp', category: 'Spices' },
+      { name: 'Small flour or corn tortillas', qty: 12, unit: '', category: 'Bakery' },
+      { name: 'Cilantro', qty: 1, unit: 'bunch', category: 'Produce' },
+    ],
+    steps: [
+      'Cut pork into 2-inch chunks, season with salt, cumin, oregano.',
+      'Add to IP with onion, garlic, juice from orange and 1 lime.',
+      'Pressure cook 45 min. Natural release.',
+      'Shred pork, crisp under broiler/air fryer if you can. Serve in tortillas with cilantro and lime.'
+    ]
+  },
+  {
+    id: 'ip-risotto',
+    name: 'Instant Pot Mushroom Risotto',
+    equipmentOptions: [['instant_pot'], ['stove']],
+    cookTime: 30, servings: 4,
+    description: 'Creamy parmesan risotto without the stirring.',
+    ingredients: [
+      { name: 'Arborio rice', qty: 1.5, unit: 'cup', category: 'Pantry' },
+      { name: 'Mushrooms (cremini)', qty: 8, unit: 'oz', category: 'Produce' },
+      { name: 'Yellow onion', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Vegetable broth', qty: 4, unit: 'cup', category: 'Pantry' },
+      { name: 'Parmesan cheese', qty: 1, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Butter', qty: 3, unit: 'tbsp', category: 'Dairy & Eggs' },
+      { name: 'White wine (optional)', qty: 0.5, unit: 'cup', category: 'Pantry' },
+    ],
+    steps: [
+      'Sauté onion, garlic, mushrooms in butter on Sauté.',
+      'Add rice, stir 1 min. Add wine if using.',
+      'Add broth, pressure cook 6 min. Quick release.',
+      'Stir in parmesan. Season and serve.'
+    ]
+  },
+  {
+    id: 'ip-mac-cheese',
+    name: 'Instant Pot Mac &amp; Cheese',
+    equipmentOptions: [['instant_pot'], ['stove']],
+    cookTime: 20, servings: 4,
+    description: 'Family-favorite creamy mac, on the table in 20 minutes.',
+    ingredients: [
+      { name: 'Elbow macaroni', qty: 1, unit: 'lb', category: 'Pantry' },
+      { name: 'Water', qty: 4, unit: 'cup', category: 'Pantry' },
+      { name: 'Whole milk', qty: 1, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Shredded cheddar', qty: 2, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Butter', qty: 4, unit: 'tbsp', category: 'Dairy & Eggs' },
+      { name: 'Mustard powder', qty: 1, unit: 'tsp', category: 'Spices' },
+    ],
+    steps: [
+      'Add pasta, water, butter, mustard powder, salt to IP.',
+      'Pressure cook 4 min. Quick release.',
+      'Stir in milk and cheese until creamy.'
+    ]
+  },
+  {
+    id: 'ip-pulled-pork',
+    name: 'Instant Pot Pulled Pork Sandwiches',
+    equipmentOptions: [['instant_pot'], ['slow_cooker']],
+    cookTime: 75, servings: 4,
+    description: 'Sweet-tangy pulled pork piled high on buns.',
+    ingredients: [
+      { name: 'Pork shoulder', qty: 2, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'BBQ sauce', qty: 1, unit: 'cup', category: 'Condiments' },
+      { name: 'Apple cider vinegar', qty: 2, unit: 'tbsp', category: 'Condiments' },
+      { name: 'Brown sugar', qty: 2, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Smoked paprika', qty: 1, unit: 'tbsp', category: 'Spices' },
+      { name: 'Burger buns', qty: 6, unit: '', category: 'Bakery' },
+      { name: 'Coleslaw mix', qty: 1, unit: 'bag', category: 'Produce' },
+    ],
+    steps: [
+      'Rub pork with paprika, salt, brown sugar.',
+      'IP: pressure cook 60 min with 1 cup water + vinegar. Natural release.',
+      'Shred, toss with BBQ sauce. Pile on buns with slaw.'
+    ]
+  },
+
+  // --- AIR FRYER FORWARD ---
+  {
+    id: 'af-salmon',
+    name: 'Air Fryer Salmon &amp; Asparagus',
+    equipmentOptions: [['air_fryer'], ['oven']],
+    cookTime: 25, servings: 4,
+    description: 'Crispy-edged salmon with garlicky asparagus.',
+    ingredients: [
+      { name: 'Salmon fillets', qty: 4, unit: '', category: 'Meat & Seafood' },
+      { name: 'Asparagus', qty: 1, unit: 'lb', category: 'Produce' },
+      { name: 'Lemon', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Olive oil', qty: 2, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Honey', qty: 1, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Soy sauce', qty: 1, unit: 'tbsp', category: 'Condiments' },
+    ],
+    steps: [
+      'Whisk honey, soy, oil, garlic. Brush onto salmon.',
+      'Air fry salmon at 400°F for 8–10 min.',
+      'Air fry asparagus 6 min with olive oil, salt, lemon zest.',
+      'Squeeze lemon over and serve.'
+    ]
+  },
+  {
+    id: 'af-wings',
+    name: 'Air Fryer Crispy Chicken Wings',
+    equipmentOptions: [['air_fryer']],
+    cookTime: 35, servings: 4,
+    description: 'Extra-crispy wings, no deep-frying needed.',
+    ingredients: [
+      { name: 'Chicken wings', qty: 2, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Baking powder', qty: 1, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Garlic powder', qty: 1, unit: 'tsp', category: 'Spices' },
+      { name: 'Smoked paprika', qty: 1, unit: 'tsp', category: 'Spices' },
+      { name: 'Buffalo sauce', qty: 0.5, unit: 'cup', category: 'Condiments' },
+      { name: 'Carrots', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Celery', qty: 1, unit: 'bunch', category: 'Produce' },
+      { name: 'Ranch or blue cheese dressing', qty: 0.5, unit: 'cup', category: 'Condiments' },
+    ],
+    steps: [
+      'Pat wings dry, toss with baking powder, garlic powder, paprika, salt.',
+      'Air fry 380°F for 12 min, flip, then 400°F for 10 min.',
+      'Toss in buffalo sauce. Serve with carrots, celery, dressing.'
+    ]
+  },
+  {
+    id: 'af-pork-chops',
+    name: 'Air Fryer Pork Chops with Apple Slaw',
+    equipmentOptions: [['air_fryer'], ['stove'], ['oven']],
+    cookTime: 25, servings: 4,
+    description: 'Juicy chops with a crunchy-sweet slaw on the side.',
+    ingredients: [
+      { name: 'Pork chops (bone-in)', qty: 4, unit: '', category: 'Meat & Seafood' },
+      { name: 'Olive oil', qty: 1, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Smoked paprika', qty: 1, unit: 'tbsp', category: 'Spices' },
+      { name: 'Garlic powder', qty: 1, unit: 'tsp', category: 'Spices' },
+      { name: 'Coleslaw mix', qty: 1, unit: 'bag', category: 'Produce' },
+      { name: 'Apple', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Apple cider vinegar', qty: 2, unit: 'tbsp', category: 'Condiments' },
+      { name: 'Honey', qty: 1, unit: 'tbsp', category: 'Pantry' },
+    ],
+    steps: [
+      'Rub chops with oil, paprika, garlic powder, salt.',
+      'Air fry at 400°F, 6 min per side.',
+      'Toss slaw mix with thinly sliced apple, vinegar, honey, salt.',
+      'Rest chops 3 min, serve with slaw.'
+    ]
+  },
+  {
+    id: 'af-meatballs',
+    name: 'Air Fryer Meatballs with Marinara',
+    equipmentOptions: [['air_fryer', 'microwave'], ['air_fryer', 'stove'], ['oven', 'microwave']],
+    cookTime: 30, servings: 4,
+    description: 'Juicy beef meatballs over warm marinara — no boiling water required.',
+    ingredients: [
+      { name: 'Ground beef', qty: 1, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Egg', qty: 1, unit: '', category: 'Dairy & Eggs' },
+      { name: 'Breadcrumbs (panko)', qty: 0.5, unit: 'cup', category: 'Pantry' },
+      { name: 'Parmesan cheese', qty: 0.5, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Garlic cloves', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Italian seasoning', qty: 1, unit: 'tsp', category: 'Spices' },
+      { name: 'Marinara sauce (jarred)', qty: 1, unit: 'jar', category: 'Pantry' },
+      { name: 'Fresh basil', qty: 1, unit: 'bunch', category: 'Produce' },
+      { name: 'Crusty bread', qty: 1, unit: 'loaf', category: 'Bakery' },
+    ],
+    steps: [
+      'Mix beef, egg, breadcrumbs, parmesan, minced garlic, Italian seasoning, salt.',
+      'Form into 1.5-inch meatballs.',
+      'Air fry 380°F for 10 min.',
+      'Warm marinara in microwave or stovetop. Spoon over meatballs with basil and bread.'
+    ]
+  },
+  {
+    id: 'af-falafel-bowls',
+    name: 'Air Fryer Falafel Bowls',
+    equipmentOptions: [['air_fryer']],
+    cookTime: 30, servings: 4,
+    description: 'Crispy falafel over greens with yogurt-tahini drizzle.',
+    ingredients: [
+      { name: 'Falafel mix or premade falafel', qty: 1, unit: 'pkg', category: 'Pantry' },
+      { name: 'Plain greek yogurt', qty: 1, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Tahini', qty: 2, unit: 'tbsp', category: 'Condiments' },
+      { name: 'Lemon', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Cucumber', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Cherry tomatoes', qty: 1, unit: 'pint', category: 'Produce' },
+      { name: 'Romaine lettuce', qty: 1, unit: 'head', category: 'Produce' },
+      { name: 'Pita bread', qty: 4, unit: '', category: 'Bakery' },
+      { name: 'Red onion', qty: 0.5, unit: '', category: 'Produce' },
+    ],
+    steps: [
+      'Prep falafel per package, air fry 380°F for 12 min, flipping once.',
+      'Whisk yogurt, tahini, lemon juice, salt.',
+      'Chop veg. Assemble bowls with lettuce, falafel, veg, sauce, warm pita.'
+    ]
+  },
+  {
+    id: 'af-chicken-sandwiches',
+    name: 'Air Fryer Crispy Chicken Sandwiches',
+    equipmentOptions: [['air_fryer'], ['oven']],
+    cookTime: 30, servings: 4,
+    description: 'Cornflake-crusted chicken on toasted buns with pickles.',
+    ingredients: [
+      { name: 'Chicken breasts', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Buttermilk', qty: 1, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Cornflakes', qty: 2, unit: 'cup', category: 'Pantry' },
+      { name: 'Flour', qty: 0.5, unit: 'cup', category: 'Pantry' },
+      { name: 'Egg', qty: 1, unit: '', category: 'Dairy & Eggs' },
+      { name: 'Brioche buns', qty: 4, unit: '', category: 'Bakery' },
+      { name: 'Dill pickles', qty: 1, unit: 'jar', category: 'Condiments' },
+      { name: 'Mayonnaise', qty: 0.5, unit: 'cup', category: 'Condiments' },
+      { name: 'Hot sauce', qty: 1, unit: 'tbsp', category: 'Condiments' },
+    ],
+    steps: [
+      'Marinate chicken in buttermilk 20 min.',
+      'Dredge in flour, then egg, then crushed cornflakes.',
+      'Air fry at 400°F for 14 min, flipping once.',
+      'Mix mayo + hot sauce. Build sandwiches with pickles.'
+    ]
+  },
+
+  // --- GRILL FORWARD ---
+  {
+    id: 'grill-steak-salad',
+    name: 'Grilled Steak Salad',
+    equipmentOptions: [['grill'], ['stove']],
+    cookTime: 30, servings: 4,
+    description: 'Medium-rare flank steak over greens with blue cheese.',
+    ingredients: [
+      { name: 'Flank steak', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Mixed greens', qty: 6, unit: 'oz', category: 'Produce' },
+      { name: 'Cherry tomatoes', qty: 1, unit: 'pint', category: 'Produce' },
+      { name: 'Red onion', qty: 0.5, unit: '', category: 'Produce' },
+      { name: 'Blue cheese crumbles', qty: 4, unit: 'oz', category: 'Dairy & Eggs' },
+      { name: 'Balsamic vinegar', qty: 3, unit: 'tbsp', category: 'Condiments' },
+      { name: 'Olive oil', qty: 4, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Dijon mustard', qty: 1, unit: 'tsp', category: 'Condiments' },
+    ],
+    steps: [
+      'Season steak with salt, pepper. Grill 4–5 min/side over high heat.',
+      'Rest 8 min, slice against grain.',
+      'Whisk vinegar, oil, mustard, salt for dressing.',
+      'Top greens with tomatoes, onion, steak, blue cheese, dressing.'
+    ]
+  },
+  {
+    id: 'grill-burgers',
+    name: 'Backyard Cheeseburgers',
+    equipmentOptions: [['grill'], ['stove'], ['air_fryer']],
+    cookTime: 25, servings: 4,
+    description: 'Classic smashed cheeseburgers with all the fixings.',
+    ingredients: [
+      { name: 'Ground beef (80/20)', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'American or cheddar cheese slices', qty: 8, unit: '', category: 'Dairy & Eggs' },
+      { name: 'Brioche buns', qty: 4, unit: '', category: 'Bakery' },
+      { name: 'Tomato', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Romaine lettuce', qty: 1, unit: 'head', category: 'Produce' },
+      { name: 'Red onion', qty: 0.5, unit: '', category: 'Produce' },
+      { name: 'Dill pickles', qty: 1, unit: 'jar', category: 'Condiments' },
+      { name: 'Ketchup', qty: 0.25, unit: 'cup', category: 'Condiments' },
+      { name: 'Mayonnaise', qty: 0.25, unit: 'cup', category: 'Condiments' },
+    ],
+    steps: [
+      'Form beef into 6 oz patties, season generously.',
+      'Grill or sear 3 min/side, add cheese in last min.',
+      'Toast buns. Build with all toppings.'
+    ]
+  },
+  {
+    id: 'grill-shrimp',
+    name: 'Grilled Shrimp Skewers',
+    equipmentOptions: [['grill'], ['air_fryer'], ['stove']],
+    cookTime: 25, servings: 4,
+    description: 'Garlic-lemon shrimp skewers over couscous.',
+    ingredients: [
+      { name: 'Large shrimp (peeled)', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Lemon', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 4, unit: '', category: 'Produce' },
+      { name: 'Olive oil', qty: 3, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Parsley', qty: 1, unit: 'bunch', category: 'Produce' },
+      { name: 'Couscous', qty: 1.5, unit: 'cup', category: 'Pantry' },
+      { name: 'Cherry tomatoes', qty: 1, unit: 'pint', category: 'Produce' },
+    ],
+    steps: [
+      'Toss shrimp with garlic, olive oil, lemon zest, salt.',
+      'Thread on skewers. Grill 2 min/side.',
+      'Pour boiling water over couscous, cover 5 min, fluff.',
+      'Serve shrimp over couscous with tomatoes, parsley, lemon.'
+    ]
+  },
+  {
+    id: 'grill-chicken-tacos',
+    name: 'Grilled Chicken Tacos',
+    equipmentOptions: [['grill'], ['stove'], ['air_fryer']],
+    cookTime: 35, servings: 4,
+    description: 'Lime-marinated chicken thighs in warm tortillas.',
+    ingredients: [
+      { name: 'Chicken thighs (boneless)', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Lime', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Cumin', qty: 1, unit: 'tbsp', category: 'Spices' },
+      { name: 'Olive oil', qty: 2, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Small flour or corn tortillas', qty: 12, unit: '', category: 'Bakery' },
+      { name: 'Cilantro', qty: 1, unit: 'bunch', category: 'Produce' },
+      { name: 'Red onion', qty: 0.5, unit: '', category: 'Produce' },
+      { name: 'Avocado', qty: 2, unit: '', category: 'Produce' },
+    ],
+    steps: [
+      'Marinate chicken in lime juice, garlic, cumin, oil 20 min.',
+      'Grill 5 min/side. Slice.',
+      'Warm tortillas. Top with chicken, cilantro, onion, avocado, more lime.'
+    ]
+  },
+  {
+    id: 'grill-veggie-halloumi',
+    name: 'Grilled Veggie &amp; Halloumi Bowls',
+    equipmentOptions: [['grill'], ['stove'], ['air_fryer']],
+    cookTime: 30, servings: 4,
+    description: 'Charred zucchini, peppers, and salty halloumi over quinoa.',
+    ingredients: [
+      { name: 'Halloumi cheese', qty: 12, unit: 'oz', category: 'Dairy & Eggs' },
+      { name: 'Zucchini', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Bell pepper', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Red onion', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Quinoa', qty: 1, unit: 'cup', category: 'Pantry' },
+      { name: 'Lemon', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Olive oil', qty: 3, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Fresh mint', qty: 1, unit: 'bunch', category: 'Produce' },
+    ],
+    steps: [
+      'Cook quinoa per package (or IP: 1 min HP, NR 10).',
+      'Slice halloumi and veg, toss with oil and salt.',
+      'Grill veg 3–4 min/side and halloumi 2 min/side.',
+      'Assemble bowls with quinoa, lemon, mint.'
+    ]
+  },
+  {
+    id: 'grill-pizza',
+    name: 'Grilled Naan Pizzas',
+    equipmentOptions: [['grill'], ['oven'], ['air_fryer']],
+    cookTime: 20, servings: 4,
+    description: 'Crispy-bottom naan pizzas with whatever toppings you love.',
+    ingredients: [
+      { name: 'Naan flatbread', qty: 4, unit: '', category: 'Bakery' },
+      { name: 'Pizza sauce or marinara', qty: 1, unit: 'cup', category: 'Pantry' },
+      { name: 'Shredded mozzarella', qty: 2, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Pepperoni (or other topping)', qty: 4, unit: 'oz', category: 'Meat & Seafood' },
+      { name: 'Fresh basil', qty: 1, unit: 'bunch', category: 'Produce' },
+      { name: 'Olive oil', qty: 1, unit: 'tbsp', category: 'Pantry' },
+    ],
+    steps: [
+      'Brush naan with oil, place on medium grill 2 min to crisp.',
+      'Flip, top with sauce, cheese, toppings.',
+      'Cover and cook 4–6 min until cheese melts.',
+      'Finish with fresh basil.'
+    ]
+  },
+
+  // --- STOVE FORWARD ---
+  {
+    id: 'stove-pasta-bolognese',
+    name: 'Quick Beef Bolognese',
+    equipmentOptions: [['stove']],
+    cookTime: 40, servings: 4,
+    description: 'Rich weeknight bolognese over rigatoni.',
+    ingredients: [
+      { name: 'Ground beef', qty: 1, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Rigatoni pasta', qty: 1, unit: 'lb', category: 'Pantry' },
+      { name: 'Crushed tomatoes (canned)', qty: 1, unit: 'can', category: 'Pantry' },
+      { name: 'Tomato paste', qty: 2, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Yellow onion', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Carrots', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Parmesan cheese', qty: 1, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Olive oil', qty: 2, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Whole milk', qty: 0.5, unit: 'cup', category: 'Dairy & Eggs' },
+    ],
+    steps: [
+      'Sauté finely chopped onion, carrots, garlic in oil.',
+      'Add beef, brown well. Stir in tomato paste 1 min.',
+      'Add crushed tomatoes and milk. Simmer 20 min.',
+      'Boil pasta, toss with sauce, top with parmesan.'
+    ]
+  },
+  {
+    id: 'stove-stir-fry',
+    name: 'Beef &amp; Broccoli Stir-Fry',
+    equipmentOptions: [['stove']],
+    cookTime: 25, servings: 4,
+    description: 'Saucy stir-fry over rice — faster than takeout.',
+    ingredients: [
+      { name: 'Flank steak', qty: 1, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Broccoli florets', qty: 1, unit: 'lb', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Ginger (fresh)', qty: 1, unit: 'tbsp', category: 'Produce' },
+      { name: 'Soy sauce', qty: 0.25, unit: 'cup', category: 'Condiments' },
+      { name: 'Brown sugar', qty: 2, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Cornstarch', qty: 1, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Sesame oil', qty: 1, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Vegetable oil', qty: 2, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Jasmine rice', qty: 1.5, unit: 'cup', category: 'Pantry' },
+    ],
+    steps: [
+      'Cook rice.',
+      'Slice steak thinly. Whisk soy, sugar, cornstarch, sesame oil.',
+      'Sear beef in hot pan with vegetable oil, remove.',
+      'Stir-fry broccoli, garlic, ginger 3 min. Return beef, add sauce, toss until glossy.'
+    ]
+  },
+  {
+    id: 'stove-lemon-pasta',
+    name: 'One-Pan Lemon Chicken Pasta',
+    equipmentOptions: [['stove']],
+    cookTime: 30, servings: 4,
+    description: 'Bright lemony pasta with seared chicken and spinach.',
+    ingredients: [
+      { name: 'Chicken breasts', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Spaghetti or linguine', qty: 12, unit: 'oz', category: 'Pantry' },
+      { name: 'Spinach (fresh)', qty: 5, unit: 'oz', category: 'Produce' },
+      { name: 'Lemon', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 4, unit: '', category: 'Produce' },
+      { name: 'Heavy cream', qty: 0.5, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Parmesan cheese', qty: 0.75, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Butter', qty: 3, unit: 'tbsp', category: 'Dairy & Eggs' },
+      { name: 'Olive oil', qty: 2, unit: 'tbsp', category: 'Pantry' },
+    ],
+    steps: [
+      'Boil pasta in salted water.',
+      'Sear sliced chicken in oil and butter; set aside.',
+      'Sauté garlic 30 sec. Add cream, lemon juice, parmesan.',
+      'Toss with pasta, chicken, spinach. Finish with lemon zest.'
+    ]
+  },
+  {
+    id: 'stove-fajitas',
+    name: 'Sheet Pan or Skillet Chicken Fajitas',
+    equipmentOptions: [['stove'], ['oven'], ['grill'], ['air_fryer']],
+    cookTime: 30, servings: 4,
+    description: 'Sizzling peppers, onions, chicken, in soft tortillas.',
+    ingredients: [
+      { name: 'Chicken breasts', qty: 1.25, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Bell pepper', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Yellow onion', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Cumin', qty: 1, unit: 'tbsp', category: 'Spices' },
+      { name: 'Chili powder', qty: 1, unit: 'tbsp', category: 'Spices' },
+      { name: 'Lime', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Olive oil', qty: 3, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Small flour tortillas', qty: 12, unit: '', category: 'Bakery' },
+      { name: 'Sour cream', qty: 0.5, unit: 'cup', category: 'Dairy & Eggs' },
+      { name: 'Shredded cheddar', qty: 1, unit: 'cup', category: 'Dairy & Eggs' },
+    ],
+    steps: [
+      'Slice chicken and veg. Toss with oil, spices, lime juice, salt.',
+      'Cook in hot skillet 8–10 min (or sheet pan 400°F 18 min, or air fryer 380°F 12 min).',
+      'Warm tortillas. Serve with sour cream, cheese, more lime.'
+    ]
+  },
+
+  // --- OVEN FORWARD ---
+  {
+    id: 'oven-sheet-pan-chicken',
+    name: 'Sheet Pan Chicken &amp; Vegetables',
+    equipmentOptions: [['oven'], ['air_fryer']],
+    cookTime: 45, servings: 4,
+    description: 'Herby chicken thighs with potatoes and green beans.',
+    ingredients: [
+      { name: 'Chicken thighs (bone-in)', qty: 6, unit: '', category: 'Meat & Seafood' },
+      { name: 'Baby potatoes', qty: 1.5, unit: 'lb', category: 'Produce' },
+      { name: 'Green beans', qty: 12, unit: 'oz', category: 'Produce' },
+      { name: 'Lemon', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 4, unit: '', category: 'Produce' },
+      { name: 'Olive oil', qty: 3, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Italian seasoning', qty: 1, unit: 'tbsp', category: 'Spices' },
+    ],
+    steps: [
+      'Halve potatoes, toss with oil, garlic, salt.',
+      'Roast 425°F for 15 min.',
+      'Add chicken (skin up, seasoned) and green beans. Roast 25 more min.',
+      'Squeeze lemon over before serving.'
+    ]
+  },
+  {
+    id: 'oven-sheet-pan-sausage',
+    name: 'Sheet Pan Sausage &amp; Peppers',
+    equipmentOptions: [['oven'], ['air_fryer'], ['grill', 'stove']],
+    cookTime: 35, servings: 4,
+    description: 'Juicy sausage links with caramelized peppers and onions.',
+    ingredients: [
+      { name: 'Italian sausage links', qty: 1.5, unit: 'lb', category: 'Meat & Seafood' },
+      { name: 'Bell pepper', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Yellow onion', qty: 2, unit: '', category: 'Produce' },
+      { name: 'Garlic cloves', qty: 3, unit: '', category: 'Produce' },
+      { name: 'Olive oil', qty: 3, unit: 'tbsp', category: 'Pantry' },
+      { name: 'Italian seasoning', qty: 1, unit: 'tbsp', category: 'Spices' },
+      { name: 'Hoagie rolls (optional)', qty: 4, unit: '', category: 'Bakery' },
+    ],
+    steps: [
+      'Slice peppers and onion. Toss with oil, garlic, seasoning, salt.',
+      'Spread on sheet pan, nestle sausages in.',
+      'Roast 425°F for 25–30 min, flipping sausages halfway.',
+      'Serve as-is or piled in hoagie rolls.'
+    ]
+  },
+
+  // --- NO-COOK / EMERGENCY ---
+  {
+    id: 'nocook-tuna-plates',
+    name: 'Mediterranean Tuna Plates',
+    equipmentOptions: [['microwave'], ['stove'], ['air_fryer'], ['oven'], ['instant_pot'], ['grill']],
+    cookTime: 15, servings: 4,
+    description: 'No-cook dinner: tuna, hummus, veg, pita. Fast and good.',
+    ingredients: [
+      { name: 'Canned tuna (good quality)', qty: 3, unit: 'can', category: 'Pantry' },
+      { name: 'Hummus', qty: 1, unit: 'container', category: 'Dairy & Eggs' },
+      { name: 'Cucumber', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Cherry tomatoes', qty: 1, unit: 'pint', category: 'Produce' },
+      { name: 'Kalamata olives', qty: 1, unit: 'cup', category: 'Pantry' },
+      { name: 'Feta cheese', qty: 6, unit: 'oz', category: 'Dairy & Eggs' },
+      { name: 'Pita bread', qty: 4, unit: '', category: 'Bakery' },
+      { name: 'Lemon', qty: 1, unit: '', category: 'Produce' },
+      { name: 'Olive oil', qty: 2, unit: 'tbsp', category: 'Pantry' },
+    ],
+    steps: [
+      'Drain tuna, drizzle with olive oil, lemon, salt.',
+      'Chop cucumber, halve tomatoes.',
+      'Plate everything family-style with hummus, olives, feta, pita.',
+      'Warm pita briefly if you like.'
+    ]
+  },
+];
+
+// =============================================================
+// STATE
+// =============================================================
+const STORAGE_KEY = 'mealplanner_v1';
+
+const defaultState = {
+  equipment: ['stove', 'oven', 'microwave'],
+  household: 4,
+  numDays: 5,
+  cookTimeMax: 45,
+  plan: [],            // array of meal entries (day, recipe, servings, source)
+  recentRecipeIds: [], // for variety on regenerate
+  shoppingChecked: {}, // key -> bool
+  lastUpdated: null,
+  weekStart: null,
+  proxyUrl: '',        // Cloudflare Worker URL for AI regenerate
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { ...defaultState };
+    const parsed = JSON.parse(raw);
+    return { ...defaultState, ...parsed };
+  } catch (e) {
+    console.warn('Could not load state', e);
+    return { ...defaultState };
+  }
+}
+
+function saveState() {
+  state.lastUpdated = Date.now();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    flashSaved();
+  } catch (e) {
+    console.warn('Could not save state', e);
+  }
+}
+
+let state = loadState();
+
+// =============================================================
+// HELPERS
+// =============================================================
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+function canCook(recipe, available) {
+  return recipe.equipmentOptions.some(combo =>
+    combo.every(eq => available.includes(eq))
+  );
+}
+
+function equipmentUsed(recipe, available) {
+  // Return the FIRST combo that satisfies, to display.
+  return recipe.equipmentOptions.find(combo => combo.every(eq => available.includes(eq))) || [];
+}
+
+function equipmentLabel(id) {
+  const e = EQUIPMENT.find(x => x.id === id);
+  return e ? `${e.icon} ${e.label}` : id;
+}
+
+function getCurrentWeekLabel() {
+  const now = new Date();
+  const opts = { month: 'short', day: 'numeric' };
+  return `Week of ${now.toLocaleDateString('en-US', opts)}`;
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function scaleIngredient(ing, factor) {
+  return {
+    ...ing,
+    qty: Math.round(ing.qty * factor * 100) / 100,
+  };
+}
+
+function flashSaved() {
+  const note = document.getElementById('savedNote');
+  note.textContent = '✓ Saved';
+  clearTimeout(flashSaved._t);
+  flashSaved._t = setTimeout(() => { note.textContent = ''; }, 1500);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// =============================================================
+// MEAL PLAN GENERATION (library mode)
+// =============================================================
+function generatePlanFromLibrary() {
+  const available = state.equipment;
+  const eligible = RECIPES.filter(r =>
+    canCook(r, available) && r.cookTime <= state.cookTimeMax
+  );
+
+  if (eligible.length === 0) {
+    showToast('No recipes match your equipment + time. Try expanding either.');
+    return [];
+  }
+
+  // Prefer recipes not used recently
+  const recent = new Set(state.recentRecipeIds || []);
+  const fresh = eligible.filter(r => !recent.has(r.id));
+  let pool = shuffle(fresh.length >= state.numDays ? fresh : eligible);
+
+  const picks = [];
+  for (let i = 0; i < state.numDays; i++) {
+    if (pool.length === 0) pool = shuffle(eligible);
+    picks.push(pool.shift());
+  }
+
+  // Update recents (keep last 12)
+  const newRecents = [...picks.map(p => p.id), ...(state.recentRecipeIds || [])];
+  state.recentRecipeIds = [...new Set(newRecents)].slice(0, 12);
+
+  const plan = picks.map((recipe, i) => ({
+    day: DAYS[i] || `Day ${i + 1}`,
+    recipe,
+    source: 'library',
+  }));
+  return plan;
+}
+
+// =============================================================
+// SHOPPING LIST AGGREGATION
+// =============================================================
+function buildShoppingList(plan) {
+  if (!plan.length) return {};
+
+  const factor = state.household / 4;
+  const map = new Map();
+
+  plan.forEach(entry => {
+    const recipe = entry.recipe;
+    const recipeFactor = factor; // every recipe baselined at 4 servings
+    recipe.ingredients.forEach(ing => {
+      const key = `${ing.name.toLowerCase()}|${(ing.unit || '').toLowerCase()}`;
+      if (map.has(key)) {
+        const existing = map.get(key);
+        existing.qty = Math.round((existing.qty + ing.qty * recipeFactor) * 100) / 100;
+      } else {
+        map.set(key, {
+          name: ing.name,
+          qty: Math.round(ing.qty * recipeFactor * 100) / 100,
+          unit: ing.unit || '',
+          category: ing.category || 'Other',
+        });
+      }
+    });
+  });
+
+  // Group by category
+  const grouped = {};
+  map.forEach(v => {
+    if (!grouped[v.category]) grouped[v.category] = [];
+    grouped[v.category].push(v);
+  });
+  Object.values(grouped).forEach(arr => arr.sort((a, b) => a.name.localeCompare(b.name)));
+  return grouped;
+}
+
+const CATEGORY_ORDER = ['Produce', 'Meat & Seafood', 'Dairy & Eggs', 'Bakery', 'Pantry', 'Frozen', 'Condiments', 'Spices', 'Other'];
+
+// =============================================================
+// RENDER
+// =============================================================
+function renderEquipment() {
+  // Presets
+  const presetsEl = document.getElementById('presets');
+  presetsEl.innerHTML = '';
+  PRESETS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.textContent = p.label;
+    btn.onclick = () => {
+      state.equipment = [...p.equipment];
+      saveState();
+      renderEquipment();
+      renderSummary();
+    };
+    presetsEl.appendChild(btn);
+  });
+
+  // Grid
+  const grid = document.getElementById('equipmentGrid');
+  grid.innerHTML = '';
+  EQUIPMENT.forEach(eq => {
+    const label = document.createElement('label');
+    label.className = 'equip-chip' + (state.equipment.includes(eq.id) ? ' active' : '');
+    label.innerHTML = `
+      <span class="equip-icon">${eq.icon}</span>
+      <span>${eq.label}</span>
+      <input type="checkbox" ${state.equipment.includes(eq.id) ? 'checked' : ''}>
+    `;
+    label.querySelector('input').onchange = (e) => {
+      if (e.target.checked) {
+        if (!state.equipment.includes(eq.id)) state.equipment.push(eq.id);
+      } else {
+        state.equipment = state.equipment.filter(x => x !== eq.id);
+      }
+      saveState();
+      renderEquipment();
+      renderSummary();
+    };
+    grid.appendChild(label);
+  });
+}
+
+function renderSummary() {
+  const el = document.getElementById('equipSummary');
+  if (state.equipment.length === 0) {
+    el.textContent = 'No equipment selected';
+    return;
+  }
+  const items = state.equipment.map(id => {
+    const e = EQUIPMENT.find(x => x.id === id);
+    return e ? e.icon : id;
+  });
+  el.textContent = items.join('  ') + `  ·  ${state.household} servings  ·  ${state.cookTimeMax >= 999 ? 'any' : '≤'+state.cookTimeMax} min`;
+}
+
+function renderPlan() {
+  const el = document.getElementById('mealPlan');
+  el.innerHTML = '';
+
+  if (!state.plan || state.plan.length === 0) {
+    el.innerHTML = `
+      <div class="empty">
+        <p style="font-size: 28px; margin: 0;">🍽️</p>
+        <p>No plan yet. Click <strong>Generate week's plan</strong> above.</p>
+      </div>
+    `;
+    return;
+  }
+
+  state.plan.forEach((entry, idx) => {
+    const r = entry.recipe;
+    let usedLabels;
+    if (entry.source === 'ai') {
+      // For AI meals, trust the equipment list — the AI was constrained to your kit.
+      const aiEq = (r.equipmentOptions[0] || []);
+      usedLabels = aiEq.length ? aiEq.map(equipmentLabel).join(' + ') : 'AI-planned';
+    } else {
+      const used = equipmentUsed(r, state.equipment);
+      usedLabels = used.map(equipmentLabel).join(' + ') || '⚠️ needs equipment you don\'t have';
+    }
+    const card = document.createElement('div');
+    card.className = 'meal-card';
+    card.innerHTML = `
+      <div class="meal-head">
+        <div>
+          <div class="meal-day">${entry.day}</div>
+          <div class="meal-name">${r.name}</div>
+          <div class="meal-meta">
+            <span>⏱ ${r.cookTime} min</span>
+            <span class="badge">${usedLabels}</span>
+            ${entry.source === 'ai' ? '<span class="badge" style="background:#eef2ff;color:#4338ca">✨ AI</span>' : ''}
+          </div>
+        </div>
+        <div class="meal-actions">
+          <button class="ghost" data-action="swap" data-idx="${idx}" title="Swap this meal">🔄</button>
+          <button class="ghost" data-action="remove" data-idx="${idx}" title="Remove">✕</button>
+        </div>
+      </div>
+      <details class="recipe">
+        <summary>Recipe &amp; ingredients</summary>
+        ${r.description ? `<p style="margin: 8px 0 4px; color: var(--text-soft); font-size:13px">${r.description}</p>` : ''}
+        <strong style="font-size:12px; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em;">Ingredients</strong>
+        <ul>
+          ${r.ingredients.map(i => {
+            const factor = state.household / 4;
+            const q = Math.round(i.qty * factor * 100) / 100;
+            return `<li>${q} ${i.unit ? i.unit + ' ' : ''}${i.name}</li>`;
+          }).join('')}
+        </ul>
+        ${r.steps ? `<strong style="font-size:12px; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em; display:block; margin-top:10px;">Steps</strong>
+        <ol>${r.steps.map(s => `<li>${s}</li>`).join('')}</ol>` : ''}
+      </details>
+    `;
+    el.appendChild(card);
+  });
+
+  // wire up swap / remove
+  el.querySelectorAll('button[data-action]').forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      const action = btn.dataset.action;
+      if (action === 'remove') {
+        state.plan.splice(idx, 1);
+      } else if (action === 'swap') {
+        const available = state.equipment;
+        const eligible = RECIPES.filter(r =>
+          canCook(r, available) &&
+          r.cookTime <= state.cookTimeMax &&
+          !state.plan.some(e => e.recipe.id === r.id)
+        );
+        if (eligible.length === 0) {
+          showToast('No alternative recipes match your kit.');
+          return;
+        }
+        const pick = eligible[Math.floor(Math.random() * eligible.length)];
+        state.plan[idx] = { ...state.plan[idx], recipe: pick };
+      }
+      saveState();
+      renderPlan();
+      renderShopping();
+    };
+  });
+}
+
+function renderShopping() {
+  const el = document.getElementById('shoppingList');
+  const copyBtn = document.getElementById('copyBtn');
+  el.innerHTML = '';
+
+  if (!state.plan || state.plan.length === 0) {
+    el.innerHTML = `<div class="empty"><p>Generate a plan to build your shopping list.</p></div>`;
+    copyBtn.style.display = 'none';
+    return;
+  }
+
+  const grouped = buildShoppingList(state.plan);
+  const cats = Object.keys(grouped).sort((a, b) => {
+    const ai = CATEGORY_ORDER.indexOf(a);
+    const bi = CATEGORY_ORDER.indexOf(b);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+  });
+
+  if (cats.length === 0) {
+    el.innerHTML = `<div class="empty"><p>Nothing to buy yet.</p></div>`;
+    copyBtn.style.display = 'none';
+    return;
+  }
+
+  cats.forEach(cat => {
+    const section = document.createElement('div');
+    section.className = 'shop-section';
+    section.innerHTML = `<div class="shop-section-title">${cat}</div>`;
+    grouped[cat].forEach(item => {
+      const key = `${item.name.toLowerCase()}|${item.unit.toLowerCase()}`;
+      const checked = !!state.shoppingChecked[key];
+      const row = document.createElement('div');
+      row.className = 'shop-item' + (checked ? ' checked' : '');
+      const id = 'chk-' + key.replace(/[^a-z0-9]/g, '');
+      row.innerHTML = `
+        <input type="checkbox" id="${id}" ${checked ? 'checked' : ''}>
+        <label for="${id}"><span class="qty">${item.qty}${item.unit ? ' ' + item.unit : ''}</span> · ${item.name}</label>
+      `;
+      row.querySelector('input').onchange = (e) => {
+        state.shoppingChecked[key] = e.target.checked;
+        saveState();
+        row.classList.toggle('checked', e.target.checked);
+      };
+      section.appendChild(row);
+    });
+    el.appendChild(section);
+  });
+
+  copyBtn.style.display = 'inline-block';
+  copyBtn.onclick = () => {
+    const lines = [];
+    cats.forEach(cat => {
+      const items = grouped[cat].filter(i => {
+        const key = `${i.name.toLowerCase()}|${i.unit.toLowerCase()}`;
+        return !state.shoppingChecked[key];
+      });
+      if (items.length === 0) return;
+      lines.push(`\n${cat.toUpperCase()}`);
+      items.forEach(i => lines.push(`  ${i.qty}${i.unit ? ' ' + i.unit : ''}  ${i.name}`));
+    });
+    const txt = lines.join('\n').trim();
+    if (!txt) {
+      showToast('Everything is checked off — nothing to copy.');
+      return;
+    }
+    navigator.clipboard.writeText(txt).then(() => showToast('Copied shopping list ✓'));
+  };
+}
+
+function renderAll() {
+  document.getElementById('weekLabel').textContent = getCurrentWeekLabel();
+  renderEquipment();
+  renderSummary();
+  renderPlan();
+  renderShopping();
+}
+
+// =============================================================
+// AI REGENERATE (uses window.cowork.askClaude if available)
+// =============================================================
+async function regenerateWithAI() {
+  const btn = document.getElementById('aiBtn');
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.innerHTML = '<span class="spinner"></span>Asking Claude…';
+
+  try {
+    const equipLabels = state.equipment.map(id => {
+      const e = EQUIPMENT.find(x => x.id === id);
+      return e ? e.label : id;
+    }).join(', ') || 'no equipment';
+
+    const recentNames = (state.plan || []).map(p => p.recipe.name).join('; ');
+
+    const prompt = `Generate a ${state.numDays}-day dinner meal plan for a household of ${state.household} people.
+Available cooking equipment: ${equipLabels}.
+Maximum weeknight cook time: ${state.cookTimeMax === 999 ? 'any' : state.cookTimeMax} minutes.
+Avoid repeating: ${recentNames || '(none)'}.
+
+CRITICAL: every recipe must be cookable using ONLY the listed equipment. Do not require any tool not in the list.
+
+Return ONLY valid JSON with this exact shape (no markdown, no commentary, no fences):
+{
+  "meals": [
+    {
+      "name": "string",
+      "description": "one-line description",
+      "cookTime": 30,
+      "equipmentUsed": ["air_fryer"],
+      "ingredients": [
+        {"name": "Chicken thighs", "qty": 1.5, "unit": "lb", "category": "Meat & Seafood"}
+      ],
+      "steps": ["short step 1", "short step 2"]
+    }
+  ]
+}
+
+Use these category values only: Produce, Meat & Seafood, Dairy & Eggs, Bakery, Pantry, Frozen, Condiments, Spices.
+Scale ingredients for 4 servings as the baseline (the app will rescale).`;
+
+    // Resolve AI backend: Cowork in-app → configured proxy URL → fallback to library
+    let rawResponse;
+    if (window.cowork && window.cowork.askClaude) {
+      rawResponse = await window.cowork.askClaude(prompt, []);
+    } else if (state.proxyUrl) {
+      const proxyResp = await fetch(state.proxyUrl, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      if (!proxyResp.ok) {
+        const errText = await proxyResp.text().catch(() => '');
+        throw new Error(`Proxy error ${proxyResp.status}: ${errText.slice(0, 200)}`);
+      }
+      const data = await proxyResp.json();
+      rawResponse = data.text || data.content || JSON.stringify(data);
+    } else {
+      showToast('Set up the Worker URL in Settings, or use the library plan.');
+      document.getElementById('configDetails').open = true;
+      document.getElementById('proxyUrl').focus();
+      return;
+    }
+
+    let parsed;
+    try {
+      const txt = typeof rawResponse === 'string' ? rawResponse : (rawResponse?.text || JSON.stringify(rawResponse));
+      const match = txt.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(match ? match[0] : txt);
+    } catch (e) {
+      console.warn('Could not parse AI response', e, rawResponse);
+      showToast('Couldn\'t parse AI response. Try again or use library plan.');
+      return;
+    }
+
+    if (!parsed.meals || !Array.isArray(parsed.meals)) {
+      showToast('AI response missing meals. Try again.');
+      return;
+    }
+
+    state.plan = parsed.meals.slice(0, state.numDays).map((m, i) => ({
+      day: DAYS[i] || `Day ${i + 1}`,
+      source: 'ai',
+      recipe: {
+        id: 'ai-' + Date.now() + '-' + i,
+        name: m.name || 'Untitled',
+        description: m.description || '',
+        cookTime: m.cookTime || 45,
+        servings: 4,
+        equipmentOptions: [m.equipmentUsed || []],
+        ingredients: (m.ingredients || []).map(ing => ({
+          name: ing.name || 'ingredient',
+          qty: Number(ing.qty) || 1,
+          unit: ing.unit || '',
+          category: ing.category || 'Other',
+        })),
+        steps: m.steps || [],
+      }
+    }));
+
+    state.weekStart = Date.now();
+    saveState();
+    renderPlan();
+    renderShopping();
+    showToast('Fresh AI plan ready ✨');
+  } catch (e) {
+    console.error(e);
+    showToast('AI request failed. Try again later.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+// =============================================================
+// EVENT WIRING
+// =============================================================
+function bindControls() {
+  const household = document.getElementById('household');
+  household.value = state.household;
+  household.onchange = () => {
+    state.household = Math.max(1, Math.min(12, parseInt(household.value) || 4));
+    saveState();
+    renderSummary();
+    renderPlan();
+    renderShopping();
+  };
+
+  const numDays = document.getElementById('numDays');
+  numDays.value = state.numDays;
+  numDays.onchange = () => {
+    state.numDays = Math.max(1, Math.min(14, parseInt(numDays.value) || 5));
+    saveState();
+    renderSummary();
+  };
+
+  const cookTime = document.getElementById('cookTime');
+  cookTime.value = String(state.cookTimeMax);
+  cookTime.onchange = () => {
+    state.cookTimeMax = parseInt(cookTime.value);
+    saveState();
+    renderSummary();
+  };
+
+  const proxyUrl = document.getElementById('proxyUrl');
+  proxyUrl.value = state.proxyUrl || '';
+  proxyUrl.onchange = () => {
+    state.proxyUrl = proxyUrl.value.trim();
+    saveState();
+  };
+
+  document.getElementById('generateBtn').onclick = () => {
+    if (state.equipment.length === 0) {
+      showToast('Pick at least one piece of equipment first.');
+      document.getElementById('configDetails').open = true;
+      return;
+    }
+    state.plan = generatePlanFromLibrary();
+    state.shoppingChecked = {};
+    state.weekStart = Date.now();
+    saveState();
+    renderPlan();
+    renderShopping();
+  };
+
+  document.getElementById('aiBtn').onclick = regenerateWithAI;
+
+  document.getElementById('clearBtn').onclick = () => {
+    state.plan = [];
+    state.shoppingChecked = {};
+    saveState();
+    renderPlan();
+    renderShopping();
+  };
+}
+
+// Open config the first time the user opens the app
+if (!state.plan || state.plan.length === 0) {
+  setTimeout(() => {
+    const d = document.getElementById('configDetails');
+    if (d) d.open = true;
+  }, 0);
+}
+
+bindControls();
+renderAll();
+</script>
+
+</body>
+</html>
